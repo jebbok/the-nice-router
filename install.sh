@@ -1,13 +1,8 @@
 #!/bin/bash  
 
+# Learn more at:
 # http://makezine.com/projects/browse-anonymously-with-a-diy-raspberry-pi-vpntor-router/
-#https://github.com/backupbrain/netninja
-
-# Download raspbian
-wget https://downloads.raspberrypi.org/raspbian_lite_latest
-# Upload to raspbian to SD card
-sudo dd bs=4M if=2014-09-09-wheezy-raspbian.img | pv | dd of=/dev/mmcblk0
-
+# https://github.com/backupbrain/netninja
 
 # Set locale
 sudo apt-get install language-pack-sv_SV.uft8
@@ -111,6 +106,7 @@ sudo cp resources/confs/lighttpd.conf /etc/lighttpd/lighttpd.conf
 sudo service lighttpd restart
 
 sudo mkdir /var/www/pihole
+# TBC ...
 
 
 
