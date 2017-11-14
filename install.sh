@@ -4,29 +4,14 @@
 # http://makezine.com/projects/browse-anonymously-with-a-diy-raspberry-pi-vpntor-router/
 # https://github.com/backupbrain/netninja
 
-# Set locale
-sudo apt-get install language-pack-sv_SV.uft8
-echo -e "password\npassword" | sudo passwd pi
+# Generate and set new password
+password=$(date +%s | sha256sum | base64 | head -c 32)
+echo Store the password: $password
+echo -e $password"\n"password | sudo passwd pi
 
-# expand disk
-sudo raspiconfig
-
-# Upgrade the systems
+# Force the operating system up to date
 sudo apt-get update -y
 sudo apt-get upgrade -y
-
-# Update the Edimax support
-cd ~
-wget https://github.com/jenssegers/RTL8188-hostapd/archive/v2.0.tar.gz
-tar -zxvf v2.0.tar.gz
-cd RTL8188-hostapd-2.0/hostapd
-sudo apt-get install make -y
-make
-sudo make install
-cd ../..
-sudo rm v2.0.tar.gz
-sudo rm RTL8188-hostapd-2.0 -r
-
 
 # Update the /etc/hostapd/hostapd.conf
 sudo cp /etc/hostapd/hostapd.conf /etc/hostapd/hostapd.conf.bak
@@ -50,7 +35,6 @@ sudo service dnsmasq start
 sudo update-rc.d dnsmasq enable
 
 # Install NAT
-
 sudo cp resources/confs/sysctl.conf /etc/sysctl.conf
 sudo sh -c "echo 1 > /proc/sys/net/ipv4/ip_forward"
 sudo ifup wlan0
@@ -69,10 +53,8 @@ echo "up iptables-restore < /etc/iptables.ipv4.nat" | sudo tee -a /etc/network/i
 
 # Install tor
 sudo apt-get install tor -y
-
 sudo cp /etc/tor/torrc /etc/tor/torrc.bak
 sudo cp resources/confs/torrc /etc/tor/torrc
-
 sudo service tor start 
 sudo update-rc.d tor enable 
 
@@ -84,7 +66,6 @@ sudo ufw allow 9030
 sudo ufw allow 9040
 sudo ufw enable
 
-
 # Freenet proxy
 # Install Oracle Java 8
 sudo add-apt-repository ppa:webupd8team/java -y
@@ -93,8 +74,7 @@ echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-
 echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
 sudo apt-get install oracle-java8-jdk -y
 
-# Install pi-hole2
-# Setup static ip??
+
 # Install Webserver
 sudo apt-get -y install lighttpd
 # Setup Webserver
@@ -105,7 +85,11 @@ sudo mv /etc/lighttpd/lighttpd.conf /etc/lighttpd/lighttpd.bak
 sudo cp resources/confs/lighttpd.conf /etc/lighttpd/lighttpd.conf
 sudo service lighttpd restart
 
+# Install Curl
+sudo apt-get install curl -y
+# Install pi-hole2
 sudo mkdir /var/www/pihole
+curl -sSL https://install.pi-hole.net | bash
 # TBC ...
 
 
